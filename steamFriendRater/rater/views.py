@@ -105,8 +105,8 @@ def getFriendsAndProfileLinks(username):
 	inCount = len(inGameParse)
 	for i in range(inCount):
 		friendDic[inGameParse.eq(i).text()] = [inGameParse.eq(i).attr("href")]
-	print len(friendDic)
-	print friendDic
+	#print len(friendDic)
+	#print friendDic
 	return friendDic
 
 def getScore(userGames, friendGames):
@@ -117,7 +117,7 @@ def getScore(userGames, friendGames):
 	for game in userGames:
 		if(friendGames.count(game) != 0):
 			score += 1
-	print str(float(score) / 20.0 * 100) + "%"
+	#print str(float(score) / 20.0 * 100) + "%"
 	return float(score) / 20.0 * 100
 
 def rank(request):
@@ -137,9 +137,9 @@ def rank(request):
 		}, context_instance=RequestContext(request))
 
 	for friend in userFriendDic:
-		print "Grabbing " + userFriendDic[friend][0] + "'s games!"
+		#print "Grabbing " + userFriendDic[friend][0] + "'s games!"
 		gameList = getFriendGameList(userFriendDic[friend][0])
-		print len(gameList)
+		#print len(gameList)
 		userFriendDic[friend].append(gameList[:20])
 		#print userFriendDic[friend]
 		userFriendDic[friend].append(getScore(userGames, gameList[:20]))
