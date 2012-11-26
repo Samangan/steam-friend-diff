@@ -2,7 +2,6 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
-from django.utils import simplejson
 from pyquery import PyQuery as pq
 from lxml import etree 
 from collections import defaultdict
