@@ -114,6 +114,9 @@ def getScore(userGames, friendGames):
 	return float(score) / 20.0 * 100
 
 def rank(request):
+	if not 'username' in request.POST:
+		return render_to_response('rater/index.html', context_instance=RequestContext(request))
+
 	userName = request.POST['username']
 	userGames = getGameList(userName)
 
