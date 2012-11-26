@@ -43,7 +43,6 @@ def getGameList(username):
 		m = rg.search(game)
 		if not m:
 			return gamesList	
-		#print m.group(1)[8:-1]
 		gamesList.append(m.group(1)[8:-1])
 
 	return gamesList
@@ -79,7 +78,6 @@ def getFriendGameList(userProfileLink):
 		m = rg.search(game)
 		if not m:
 			return gamesList	
-		#print m.group(1)[8:-1]
 		gamesList.append(m.group(1)[8:-1])
 
 	return gamesList
@@ -90,7 +88,6 @@ def getFriendsAndProfileLinks(username):
 	# Offline Friends
 	offParse = page(".linkFriend_offline")
 	offlineCount = len(offParse)
-	#print offParse
 	for i in range(offlineCount):
 		friendDic[offParse.eq(i).text()] = [offParse.eq(i).attr("href")]
 		
@@ -105,8 +102,6 @@ def getFriendsAndProfileLinks(username):
 	inCount = len(inGameParse)
 	for i in range(inCount):
 		friendDic[inGameParse.eq(i).text()] = [inGameParse.eq(i).attr("href")]
-	#print len(friendDic)
-	#print friendDic
 	return friendDic
 
 def getScore(userGames, friendGames):
@@ -117,7 +112,6 @@ def getScore(userGames, friendGames):
 	for game in userGames:
 		if(friendGames.count(game) != 0):
 			score += 1
-	#print str(float(score) / 20.0 * 100) + "%"
 	return float(score) / 20.0 * 100
 
 def rank(request):
@@ -137,16 +131,11 @@ def rank(request):
 		}, context_instance=RequestContext(request))
 
 	for friend in userFriendDic:
-		#print "Grabbing " + userFriendDic[friend][0] + "'s games!"
 		gameList = getFriendGameList(userFriendDic[friend][0])
-		#print len(gameList)
 		userFriendDic[friend].append(gameList[:20])
-		#print userFriendDic[friend]
 		userFriendDic[friend].append(getScore(userGames, gameList[:20]))
 
 	userFriendDic = sorted(userFriendDic.items(), key=lambda x: -x[1][2])
-	#print userFriendDic
-
 	return render_to_response('rater/rating.html', {
 		'username': userName,
 		'user_game_list': userGames[:20],
