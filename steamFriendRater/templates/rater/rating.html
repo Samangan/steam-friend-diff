@@ -1,0 +1,78 @@
+	
+<html>
+    <head>
+        <title>Steam Friend Ranker</title>
+       
+
+      <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.0/css/bootstrap-combined.min.css"> 
+    
+    
+  
+		<link href="http://gentle-journey-9685.herokuapp.com/media/style/style.css" rel="stylesheet" type="text/css">
+    
+    
+    </head>
+    <body>
+	    <header>		
+			<div class="page-header">		
+				<h1>Rank My Steam Friends<small>See how much in common your friends have with you</small></h1>
+			</div>
+		</header>
+	     <div id="content">
+		{% if error_message %}<div class="alert alert-error">
+			{{ error_message }}</strong></p>
+		</div>
+		{% endif %}   
+
+
+		<h2>{{username}}'s Top 20 Games</h2>
+			
+		{% if user_game_list %}
+		<div class="rankList">			
+				<table class="table table-condensed table-hover">
+					<tbody>
+						{%for game in user_game_list%}
+						<tr class="info"><td>{{game}}</td></tr>
+						{%endfor%}
+					</tbody>
+				</table>
+		</div>
+		{% endif %}   
+	
+
+		<h2>{{username}}'s Best Bros</h2>
+
+		{% if user_friend_dic %}
+		<div id="friend-list">
+			{% for friend, rank in user_friend_dic %}
+				<div id = "friend">
+					<h3>{{forloop.counter}}. {{ friend }}</h3>
+					<div id="rank">
+						<div class="progress progress-info progress-striped">
+						  <div class="bar" style="width: {{ rank.2 }}%"></div>
+						</div>
+						<button type="button" class="btn" data-toggle="collapse" data-target="#gamesList">
+							Collapse tastes
+						</button>
+						<div id="gamesList">
+							<table class="table table-condensed table-hover">
+							<thead><tr><th>{{ friend }}'s Top 20 Games</th></tr></thead>
+							<tbody>
+							{%for r in rank.1%}
+								{% if r in user_game_list%}
+									<tr class="info"><td>{{r}}</td></tr>
+								{% else %}
+									<tr class="error"><td>{{r}}</td></tr>
+								{% endif%}
+							{% endfor %}
+							</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+		{% endif %}  
+		</div>
+    </body>
+</html>
