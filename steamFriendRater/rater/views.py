@@ -11,7 +11,7 @@ import re
 #TODO: Remove this function
 #TODO: Have the user input their full link to their profile
 #	To avoid having to ask them which type it is in order to get a link
-def getGameList(username):
+def getGameList(username, numGames):
 	gamesList = []
 	page = pq("http://steamcommunity.com/id/"+ username +"/games?tab=all")
 	toParse = page("script[language*=javascript]")
@@ -34,19 +34,20 @@ def getGameList(username):
 	games = rg.findall(gameInfo)
 
 	#Save only the name of each game
-	for game in games:
+	i = 0
+	for i in range(numGames):
 		re1 = '.*?'
 		re2 = '.*?,'
 		re3='(.*?),'
 		rg = re.compile(re1+re2+re3,re.IGNORECASE|re.DOTALL)
-		m = rg.search(game)
+		m = rg.search(games[i])
 		if not m:
 			return gamesList	
 		gamesList.append(m.group(1)[8:-1])
 
 	return gamesList
 
-def getFriendGameList(userProfileLink):
+def getFriendGameList(userProfileLink, numGames):
 	gamesList = []
 	page = pq(userProfileLink+"/games?tab=all")
 	toParse = page("script[language*=javascript]")
@@ -69,12 +70,16 @@ def getFriendGameList(userProfileLink):
 	games = rg.findall(gameInfo)
 
 	#Save only the name of each game
-	for game in games:
+	if len(games) < numGames:
+		numGames = len(games)
+		
+	i = 0
+	for i in range(numGames):
 		re1 = '.*?'
 		re2 = '.*?,'
 		re3='(.*?),'
 		rg = re.compile(re1+re2+re3,re.IGNORECASE|re.DOTALL)
-		m = rg.search(game)
+		m = rg.search(games[i])
 		if not m:
 			return gamesList	
 		gamesList.append(m.group(1)[8:-1])
@@ -105,7 +110,7 @@ def getFriendsAndProfileLinks(username):
 
 def getScore(userGames, friendGames):
 	#compute top 20 ranking
-	userGames = userGames[:20]
+	#userGames = userGames[:20]
 	score = 0
 
 	for game in userGames:
@@ -114,11 +119,12 @@ def getScore(userGames, friendGames):
 	return float(score) / 20.0 * 100
 
 def rank(request):
+	numGames = 20
 	if not 'username' in request.POST:
 		return render_to_response('rater/index.html', context_instance=RequestContext(request))
 
 	userName = request.POST['username']
-	userGames = getGameList(userName)
+	userGames = getGameList(userName, numGames)
 
 	if not userGames:
 		return render_to_response('rater/index.html', {
@@ -133,14 +139,14 @@ def rank(request):
 		}, context_instance=RequestContext(request))
 
 	for friend in userFriendDic:
-		gameList = getFriendGameList(userFriendDic[friend][0])
-		userFriendDic[friend].append(gameList[:20])
-		userFriendDic[friend].append(getScore(userGames, gameList[:20]))
+		gameList = getFriendGameList(userFriendDic[friend][0], numGames)
+		userFriendDic[friend].append(gameList)
+		userFriendDic[friend].append(getScore(userGames, gameList))
 
 	userFriendDic = sorted(userFriendDic.items(), key=lambda x: -x[1][2])
 	return render_to_response('rater/rating.html', {
 		'username': userName,
-		'user_game_list': userGames[:20],
+		'user_game_list': userGames,
 		'user_friend_dic': userFriendDic,
 	}, context_instance=RequestContext(request))
 
