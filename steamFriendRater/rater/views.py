@@ -7,128 +7,84 @@ from lxml import etree
 from collections import defaultdict
 import urllib
 import re 
+import socket
 
-#TODO: Remove this function
-#TODO: Have the user input their full link to their profile
-#	To avoid having to ask them which type it is in order to get a link
-def getGameList(username, numGames):
+
+def getUserName(userProfileLink):
+	#TODO: below breaks if user gives an invalid userProfileLink
+	#TODO: regex check a valid userProfileLink before continuing
+	#    return gamesList if invalid userProfileLink
+	socket.setdefaulttimeout(30)
+	page = pq(userProfileLink+"/games?tab=all&xml=1", parser="xml", timeout=30)
+	return page('gamesList')('steamID').text()
+
+def getGameList(userProfileLink):
 	gamesList = []
-	page = pq("http://steamcommunity.com/id/"+ username +"/games?tab=all")
-	toParse = page("script[language*=javascript]")
+	socket.setdefaulttimeout(30)
+	page = pq(userProfileLink+"/games?tab=all&xml=1", parser="xml", timeout=30)
+	#print page('gamesList')('steamID').text()
+	games = page('gamesList')('games')('game')
 
-	#Use Regex to parse out rgGames array
-	re1='.*?'
-	re2='(\\[.*?\\])'
-
-	rg = re.compile(re1+re2,re.IGNORECASE|re.DOTALL)
-	m = rg.search(str(toParse))
-	gameInfo = ""
-	if m:
-	    gameInfo=m.group(1)
-	else:
-		 return gamesList   
-	
-	#Separate each game
-	re1 = '\\{(.*?)\\}'
-	rg = re.compile(re1,re.IGNORECASE|re.DOTALL)
-	games = rg.findall(gameInfo)
-
-	#Save only the name of each game
+	hasPlayedLastTwoWeeks = True
 	i = 0
-	for i in range(numGames):
-		re1 = '.*?'
-		re2 = '.*?,'
-		re3='(.*?),'
-		rg = re.compile(re1+re2+re3,re.IGNORECASE|re.DOTALL)
-		m = rg.search(games[i])
-		if not m:
-			return gamesList	
-		gamesList.append(m.group(1)[8:-1])
+	while hasPlayedLastTwoWeeks:
+		if games.eq(i)('hoursLast2Weeks'):
+			#print games.eq(i)('name').text()
+			gamesList.append(games.eq(i)('name').text())
+			i += 1
+		else:
+			hasPlayedLastTwoWeeks = False
 
 	return gamesList
 
-def getFriendGameList(userProfileLink, numGames):
+def getFullGameList(userProfileLink):
 	gamesList = []
-	page = pq(userProfileLink+"/games?tab=all")
-	toParse = page("script[language*=javascript]")
+	socket.setdefaulttimeout(30)
+	page = pq(userProfileLink+"/games?tab=all&xml=1", parser="xml", timeout=30)
+	#print page('gamesList')('steamID').text()
+	games = page('gamesList')('games')('game')
 
-	#Use Regex to parse out rgGames array
-	re1='.*?'
-	re2='(\\[.*?\\])'
-
-	rg = re.compile(re1+re2,re.IGNORECASE|re.DOTALL)
-	m = rg.search(str(toParse))
-	gameInfo = ""
-	if m:
-	    gameInfo=m.group(1)
-	else:
-		 return gamesList   
-	
-	#Separate each game
-	re1 = '\\{(.*?)\\}'
-	rg = re.compile(re1,re.IGNORECASE|re.DOTALL)
-	games = rg.findall(gameInfo)
-
-	#Save only the name of each game
-	if len(games) < numGames:
-		numGames = len(games)
-		
 	i = 0
-	for i in range(numGames):
-		re1 = '.*?'
-		re2 = '.*?,'
-		re3='(.*?),'
-		rg = re.compile(re1+re2+re3,re.IGNORECASE|re.DOTALL)
-		m = rg.search(games[i])
-		if not m:
-			return gamesList	
-		gamesList.append(m.group(1)[8:-1])
+	for i in range(len(games)):
+		gamesList.append(games.eq(i)('name').text())
 
 	return gamesList
 
-def getFriendsAndProfileLinks(username):
-	friendDic= {}
-	page = pq("http://steamcommunity.com/id/"+ username +"/friends")
-	# Offline Friends
-	offParse = page(".linkFriend_offline")
-	offlineCount = len(offParse)
-	for i in range(offlineCount):
-		friendDic[offParse.eq(i).text()] = [offParse.eq(i).attr("href")]
-		
-	# Online Friends
-	onParse = page(".linkFriend_online")
-	onCount = len(onParse)
-	for i in range(onCount):
-		friendDic[onParse.eq(i).text()] = [onParse.eq(i).attr("href")]
-	
-	# Ingame Friends
-	inGameParse = page(".linkFriend_in-game").filter("a")
-	inCount = len(inGameParse)
-	for i in range(inCount):
-		friendDic[inGameParse.eq(i).text()] = [inGameParse.eq(i).attr("href")]
+def getFriendsAndProfileLinks(userProfileLink):
+	friendDic = {}
+	socket.setdefaulttimeout(30)
+	page = pq(userProfileLink +"/friends?xml=1", parser="xml", timeout=30)
+	friends = page('friendsList')('friends')('friend')
+
+	i = 0
+	for i in range(len(friends)):
+		iD = friends.eq(i).text()
+		friendDic[iD] = ["http://steamcommunity.com/profiles/"+iD]
 	return friendDic
 
 def getScore(userGames, friendGames):
-	#compute top 20 ranking
-	#userGames = userGames[:20]
 	score = 0
-
 	for game in userGames:
 		if(friendGames.count(game) != 0):
 			score += 1
-	return float(score) / 20.0 * 100
+	return float(score) / len(userGames) * 100.0
+
+def normalizeRankings(rankings):
+	normRanks = []
+	## TODO: Implement me maybe
+	return normRanks
 
 def rank(request):
-	numGames = 20
+	#numGames = 20 --> old implementation
 	if not 'username' in request.POST:
 		return render_to_response('rater/index.html', context_instance=RequestContext(request))
 
 	userName = request.POST['username']
-	userGames = getGameList(userName, numGames)
+	userGames = getGameList(userName)
 
 	if not userGames:
 		return render_to_response('rater/index.html', {
-			'error_message': "Rating Failed! You didn't enter a valid Steam Id.",
+			'error_message': "Rating Failed! You didn't enter a valid url to the Steam Profile Page",
 		}, context_instance=RequestContext(request))
 
 	userFriendDic = getFriendsAndProfileLinks(userName)
@@ -139,7 +95,7 @@ def rank(request):
 		}, context_instance=RequestContext(request))
 
 	for friend in userFriendDic:
-		gameList = getFriendGameList(userFriendDic[friend][0], numGames)
+		gameList = getGameList(userFriendDic[friend][0])
 		userFriendDic[friend].append(gameList)
 		userFriendDic[friend].append(getScore(userGames, gameList))
 
@@ -151,3 +107,35 @@ def rank(request):
 	}, context_instance=RequestContext(request))
 
 
+def compare(request):
+	if not 'username' in request.POST:
+		return render_to_response('rater/index.html', context_instance=RequestContext(request))
+	if not 'friend' in request.POST:
+		return render_to_response('rater/index.html', context_instance=RequestContext(request))
+
+	userName = request.POST['username']
+	friend = request.POST['friend']
+
+	userGames = getFullGameList(userName)
+
+	if not userGames:
+		return render_to_response('rater/index.html', {
+			'error_message': "Rating Failed! You didn't enter a valid url to your Steam Profile Page",
+		}, context_instance=RequestContext(request))
+
+	friendGames = getFullGameList(friend)
+
+	if not friendGames:
+		return render_to_response('rater/index.html', {
+			'error_message': "Rating Failed! You didn't enter a valid url to your Friend's Steam Profile Page",
+		}, context_instance=RequestContext(request))
+
+	userName = getUserName(userName)
+	friend = getUserName(friend)
+
+	return render_to_response('rater/compare.html', {
+		'username': userName,
+		'friend': friend,
+		'user_game_list': userGames,
+		'friend_game_list': friendGames,
+	}, context_instance=RequestContext(request))
