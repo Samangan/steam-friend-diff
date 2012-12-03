@@ -5,6 +5,7 @@ from django.core.urlresolvers import reverse
 from pyquery import PyQuery as pq
 from lxml import etree 
 from collections import defaultdict
+from urlparse import urlparse
 import urllib
 import re 
 import socket
@@ -115,6 +116,18 @@ def compare(request):
 
 	userName = request.POST['username']
 	friend = request.POST['friend']
+
+	urlTest = urlparse(userName)
+	if urlTest.scheme not in ['http', 'https'] :
+		return render_to_response('rater/index.html', {
+			'error_message': "Rating Failed! You didn't enter a valid url to your Steam Profile Page",
+		}, context_instance=RequestContext(request))
+
+	urlTest = urlparse(friend)
+	if urlTest.scheme not in ['http', 'https'] :
+		return render_to_response('rater/index.html', {
+			'error_message': "Rating Failed! You didn't enter a valid url for your Friend's Steam Profile Page",
+		}, context_instance=RequestContext(request))
 
 	userGames = getFullGameList(userName)
 
