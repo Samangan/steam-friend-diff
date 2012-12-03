@@ -7,14 +7,26 @@
 		<link href="http://gentle-journey-9685.herokuapp.com/media/style/style.css" rel="stylesheet" type="text/css">
 
         </head>
-    <body>
-	    <header>		
-			<div class="page-header">		
-				<h1>Rank My Steam Friends<small>See how much in common your friends have with you</small></h1>
-			</div>
-		</header>
-	    <div id="content">
-			   <p>Insert your Steam User Id to Rank Your Friends! (only works if their profile is public)</p>
+
+        <script type = "text/javascript">             function onClicked(){
+alert("Loading please wait...");             }         </script>     <body>
+<header>                     <div class="page-header">
+<h1>Rank My Steam Friends<small>See how much in common your friends have with
+you</small></h1>             </div>         </header>         <div
+id="content">             <h3>See what games you and another steam user have
+in common</h3>             <p>Insert the link to 2 steam profile pages in
+order to compare them</p>             {% if error_message %}<div class="alert
+alert-error">                 {{ error_message }}</strong></p>
+</div>             {% endif %}                <form method="post"
+action="/rateMyFriends/compare/">                 {% csrf_token %}
+<input type="text" placeholder="Your Profile Link" name="username">
+<input type="text" placeholder="A Friend's Profile Link" name="friend">
+<input onclick="onClicked();"type="submit" value="Compare!">
+</form>
+
+
+	    	<h3>Work in Progress</h3>
+			   <p>Insert the link to your steam profile page in order to Rank Your Friends! (only works if their profile is public)</p>
 			{% if error_message %}<div class="alert alert-error">
 				{{ error_message }}</strong></p>
 			</div>
@@ -22,8 +34,10 @@
 			<form method="post" action="/rateMyFriends/rank/">
 		    	{% csrf_token %}
 		    	<input type="text" name="username">
-		    	<input type="submit" value="Rank!">
+		    	<!-- <input onclick="onClicked();"type="submit" value="Rank!"> -->
 			</form>
+
+			<div id="modal"></div>
 		</div>
     </body>
 </html>
