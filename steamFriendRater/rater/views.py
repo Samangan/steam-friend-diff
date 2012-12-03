@@ -118,13 +118,14 @@ def compare(request):
 	friend = request.POST['friend']
 
 	urlTest = urlparse(userName)
-	if urlTest.scheme not in ['http', 'https'] or urlTest.netloc is not "steamcommunity.com":
+	print urlTest.netloc
+	if urlTest.scheme not in ['http', 'https'] or urlTest.netloc != "steamcommunity.com":
 		return render_to_response('rater/index.html', {
 			'error_message': "Rating Failed! You didn't enter a valid url to your Steam Profile Page",
 		}, context_instance=RequestContext(request))
 
 	urlTest = urlparse(friend)
-	if urlTest.scheme not in ['http', 'https'] or urlTest.netloc is not "steamcommunity.com":
+	if urlTest.scheme not in ['http', 'https'] or urlTest.netloc != "steamcommunity.com":
 		return render_to_response('rater/index.html', {
 			'error_message': "Rating Failed! You didn't enter a valid url for your Friend's Steam Profile Page",
 		}, context_instance=RequestContext(request))
