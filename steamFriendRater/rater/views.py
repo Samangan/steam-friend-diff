@@ -7,25 +7,75 @@ from lxml import etree
 from collections import defaultdict
 from urlparse import urlparse
 import urllib
+import urllib2
 import re 
 import socket
+import time
 
+#TODO: change all non views to something_something_etc
+#		0check out python coding standards
+
+#TODO: 
+#	-Hipster Calculator
+#	-Casual Calculator
+
+def retry(ExceptionToCheck, tries=4, delay=3, backoff=2, logger=None):
+    """Retry calling the decorated function using an exponential backoff.
+
+    http://www.saltycrane.com/blog/2009/11/trying-out-retry-decorator-python/
+    original from: http://wiki.python.org/moin/PythonDecoratorLibrary#Retry
+
+    :param ExceptionToCheck: the exception to check. may be a tuple of
+        excpetions to check
+    :type ExceptionToCheck: Exception or tuple
+    :param tries: number of times to try (not retry) before giving up
+    :type tries: int
+    :param delay: initial delay between retries in seconds
+    :type delay: int
+    :param backoff: backoff multiplier e.g. value of 2 will double the delay
+        each retry
+    :type backoff: int
+    :param logger: logger to use. If None, print
+    :type logger: logging.Logger instance
+    """
+    def deco_retry(f):
+        def f_retry(*args, **kwargs):
+            mtries, mdelay = tries, delay
+            try_one_last_time = True
+            while mtries > 1:
+                try:
+                    return f(*args, **kwargs)
+                    try_one_last_time = False
+                    break
+                except ExceptionToCheck, e:
+                    msg = "%s, Retrying in %d seconds..." % (str(e), mdelay)
+                    if logger:
+                        logger.warning(msg)
+                    else:
+                        print msg
+                    time.sleep(mdelay)
+                    mtries -= 1
+                    mdelay *= backoff
+            if try_one_last_time:
+                return f(*args, **kwargs)
+            return
+        return f_retry  # true decorator
+    return deco_retry
 
 def getUserName(userProfileLink):
-	#TODO: below breaks if user gives an invalid userProfileLink
-	#TODO: regex check a valid userProfileLink before continuing
-	#    return gamesList if invalid userProfileLink
-	socket.setdefaulttimeout(30)
-	page = pq(userProfileLink+"/games?tab=all&xml=1", parser="xml", timeout=30)
-	return page('gamesList')('steamID').text()
+	#socket.setdefaulttimeout(30)
+	@retry(urllib2.URLError, tries=4, delay=3, backoff=2)
+	def urlOpenRetry():
+		return pq(userProfileLink+"/games?tab=all&xml=1", parser="xml", timeout=30)	
+	return urlOpenRetry()('gamesList')('steamID').text()
 
 def getGameList(userProfileLink):
 	gamesList = []
-	socket.setdefaulttimeout(30)
-	page = pq(userProfileLink+"/games?tab=all&xml=1", parser="xml", timeout=30)
-	#print page('gamesList')('steamID').text()
-	games = page('gamesList')('games')('game')
-
+	#socket.setdefaulttimeout(30)
+	@retry(urllib2.URLError, tries=4, delay=3, backoff=2)
+	def urlOpenRetry():
+		return pq(userProfileLink+"/games?tab=all&xml=1", parser="xml", timeout=30)
+	games = urlOpenRetry()('gamesList')('games')('game')
 	hasPlayedLastTwoWeeks = True
 	i = 0
 	while hasPlayedLastTwoWeeks:
@@ -35,15 +85,16 @@ def getGameList(userProfileLink):
 			i += 1
 		else:
 			hasPlayedLastTwoWeeks = False
-
 	return gamesList
 
 def getFullGameList(userProfileLink):
 	gamesList = []
-	socket.setdefaulttimeout(30)
-	page = pq(userProfileLink+"/games?tab=all&xml=1", parser="xml", timeout=30)
+	#socket.setdefaulttimeout(30)
+	@retry(urllib2.URLError, tries=4, delay=3, backoff=2)
+	def urlOpenRetry():
+		return pq(userProfileLink+"/games?tab=all&xml=1", parser="xml", timeout=30)
 	#print page('gamesList')('steamID').text()
-	games = page('gamesList')('games')('game')
+	games = urlOpenRetry()('gamesList')('games')('game')
 
 	i = 0
 	for i in range(len(games)):
@@ -53,14 +104,16 @@ def getFullGameList(userProfileLink):
 
 def getFriendsAndProfileLinks(userProfileLink):
 	friendDic = {}
-	socket.setdefaulttimeout(30)
-	page = pq(userProfileLink +"/friends?xml=1", parser="xml", timeout=30)
-	friends = page('friendsList')('friends')('friend')
+	#socket.setdefaulttimeout(30)
+	@retry(urllib2.URLError, tries=4, delay=3, backoff=2)
+	def urlOpenRetry():
+		return pq(userProfileLink +"/friends?xml=1", parser="xml", timeout=30)
+	friends = urlOpenRetry()('friendsList')('friends')('friend')
 
 	i = 0
 	for i in range(len(friends)):
 		iD = friends.eq(i).text()
-		friendDic[iD] = ["http://steamcommunity.com/profiles/"+iD]
+		friendDic[getUserName("http://steamcommunity.com/profiles/"+iD)] = ["http://steamcommunity.com/profiles/"+iD]
 	return friendDic
 
 def getScore(userGames, friendGames):
@@ -118,7 +171,6 @@ def compare(request):
 	friend = request.POST['friend']
 
 	urlTest = urlparse(userName)
-	print urlTest.netloc
 	if urlTest.scheme not in ['http', 'https'] or urlTest.netloc != "steamcommunity.com":
 		return render_to_response('rater/index.html', {
 			'error_message': "Rating Failed! You didn't enter a valid url to your Steam Profile Page",
