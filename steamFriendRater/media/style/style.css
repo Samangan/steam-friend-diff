@@ -14,7 +14,7 @@ h1 small{
 	margin-top: 15px;
 }
 body{
-	max-width: 875px;
+	max-width: 1000px;
 	margin-right: auto;
 	margin-left: auto;
 	display:block;	
@@ -23,7 +23,7 @@ body{
 #content{
 	margin-right: auto;
 	margin-left: auto;
-	max-width: 800px;
+	max-width: 920px;
 }
 
 h2{
