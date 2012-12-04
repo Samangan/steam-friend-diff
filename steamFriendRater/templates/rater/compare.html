@@ -43,7 +43,17 @@
 						</tbody>
 					</table>
 			</div>
-			
+			<div class="friend-unique-games"  style="float: right">			
+					<table width="300" class="table table-condensed table-hover">
+						<tbody>
+							{%for game in friend_game_list%}
+								{% if game not in user_game_list%}
+									<tr class="error"><td>{{game}}</td></tr>
+								{% endif%}
+							{%endfor%}
+						</tbody>
+					</table>
+			</div>
 			<div class="common-games"  style="display: inline">			
 					<table class="table table-condensed table-hover"  style="margin-left: auto;
 margin-right: auto; width:300">
@@ -57,17 +67,7 @@ margin-right: auto; width:300">
 					</table>
 			</div>
 
-			<div class="friend-unique-games"  style="float: right">			
-					<table width="300" class="table table-condensed table-hover">
-						<tbody>
-							{%for game in friend_game_list%}
-								{% if game not in user_game_list%}
-									<tr class="error"><td>{{game}}</td></tr>
-								{% endif%}
-							{%endfor%}
-						</tbody>
-					</table>
-			</div>
+			
 		</div>
 		</div>
 <!-- 
