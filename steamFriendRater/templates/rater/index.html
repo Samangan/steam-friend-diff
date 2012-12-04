@@ -36,6 +36,10 @@ alert-error">                 {{ error_message }}</strong></p></div>
             <input type="text" placeholder="A Friend's Profile Link" name="friend" />
             <input onclick="onClicked();" type="submit" value="Compare!" />
          </form>
+
+
+         <img src="http://safe-woodland-4385.herokuapp.com/media/images/loading.gif" id="loadingImage" style="display: none;">
+         
          <h3>Work in Progress</h3>
          <p>Insert the link to your steam profile page in order to Rank Your Friends! (only works if their profile is public)</p>
          {% if error_message %}
@@ -48,7 +52,6 @@ alert-error">                 {{ error_message }}</strong></p></div>
            <!--  <input type="text" name="username" />
             <input onclick="onClicked();" type="submit" value="Rank!" /> -->
          </form>
-         <img src="http://safe-woodland-4385.herokuapp.com/media/images/loading.gif" id="loadingImage" style="display: none;">
          <div id="modal"></div>
       </div>
    </body>
