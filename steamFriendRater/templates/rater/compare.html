@@ -13,60 +13,61 @@
     
     </head>
     <body>
+    	<div id="content">
 	    <header>		
 			<div class="page-header">		
 				<h1>Rank My Steam Friends<small>See how much in common your friends have with you</small></h1>
 			</div>
 		</header>
 	     <div id="content">
-		{% if error_message %}<div class="alert alert-error">
-			{{ error_message }}</strong></p>
-		</div>
-		{% endif %}   
+			{% if error_message %}<div class="alert alert-error">
+				{{ error_message }}</strong></p>
+			</div>
+			{% endif %}   
 
 
-		<h2>Venn Diagram</h2>
-		<h3>Key</h3>
-			<div id="key"><ul><li>Green: {{username}}'s unique games</li><li>Blue: Games in Common</li>
-				<li>Red: {{friend}}'s unique games</li></ul></div>
+			<h2>Venn Diagram</h2>
+			<h3>Key</h3>
+				<div id="key"><ul><li>Green: {{username}}'s unique games</li><li>Blue: Games in Common</li>
+					<li>Red: {{friend}}'s unique games</li></ul></div>
 
-		
-		<div class="user-unique-games"  style="float: left">			
-				<table class="table table-condensed table-hover">
-					<tbody>
-						{%for game in user_game_list%}
-							{% if game not in friend_game_list%}
-								<tr class="success"><td>{{game}}</td></tr>
-							{% endif%}
-						{%endfor%}
-					</tbody>
-				</table>
-		</div>
-		
-		<div class="common-games"  style="display: inline">			
-				<table class="table table-condensed table-hover">
-					<tbody>
-						{%for game in user_game_list%}
-							{% if game in friend_game_list%}
-								<tr class="info"><td>{{game}}</td></tr>
-							{% endif%}
-						{%endfor%}
-					</tbody>
-				</table>
-		</div>
+			
+			<div class="user-unique-games"  style="float: left">			
+					<table class="table table-condensed table-hover">
+						<tbody>
+							{%for game in user_game_list%}
+								{% if game not in friend_game_list%}
+									<tr class="success"><td>{{game}}</td></tr>
+								{% endif%}
+							{%endfor%}
+						</tbody>
+					</table>
+			</div>
+			
+			<div class="common-games"  style="display: inline">			
+					<table class="table table-condensed table-hover">
+						<tbody>
+							{%for game in user_game_list%}
+								{% if game in friend_game_list%}
+									<tr class="info"><td>{{game}}</td></tr>
+								{% endif%}
+							{%endfor%}
+						</tbody>
+					</table>
+			</div>
 
-		<div class="friend-unique-games"  style="float: right">			
-				<table class="table table-condensed table-hover">
-					<tbody>
-						{%for game in friend_game_list%}
-							{% if game not in user_game_list%}
-								<tr class="error"><td>{{game}}</td></tr>
-							{% endif%}
-						{%endfor%}
-					</tbody>
-				</table>
+			<div class="friend-unique-games"  style="float: right">			
+					<table class="table table-condensed table-hover">
+						<tbody>
+							{%for game in friend_game_list%}
+								{% if game not in user_game_list%}
+									<tr class="error"><td>{{game}}</td></tr>
+								{% endif%}
+							{%endfor%}
+						</tbody>
+					</table>
+			</div>
 		</div>
-	
 <!-- 
 
 		<h2>{{username}}'s Games</h2>
