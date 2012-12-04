@@ -19,7 +19,7 @@ import time
 #	-Hipster Calculator
 #	-Casual Calculator
 
-def retry(ExceptionToCheck, tries=4, delay=1, backoff=2, logger=None):
+def retry(ExceptionToCheck, tries=10, delay=3, backoff=2, logger=None):
     """Retry calling the decorated function using an exponential backoff.
 
     http://www.saltycrane.com/blog/2009/11/trying-out-retry-decorator-python/
@@ -64,7 +64,7 @@ def retry(ExceptionToCheck, tries=4, delay=1, backoff=2, logger=None):
 
 def getUserName(userProfileLink):
 	#socket.setdefaulttimeout(30)
-	@retry(urllib2.URLError, tries=4, delay=1, backoff=2)
+	@retry(urllib2.URLError)
 	def urlOpenRetry():
 		return pq(userProfileLink+"/games?tab=all&xml=1", parser="xml", timeout=30)	
 	return urlOpenRetry()('gamesList')('steamID').text()
@@ -72,7 +72,7 @@ def getUserName(userProfileLink):
 def getGameList(userProfileLink):
 	gamesList = []
 	#socket.setdefaulttimeout(30)
-	@retry(urllib2.URLError, tries=4, delay=1, backoff=2)
+	@retry(urllib2.URLError)
 	def urlOpenRetry():
 		return pq(userProfileLink+"/games?tab=all&xml=1", parser="xml", timeout=30)
 	games = urlOpenRetry()('gamesList')('games')('game')
@@ -90,7 +90,7 @@ def getGameList(userProfileLink):
 def getFullGameList(userProfileLink):
 	gamesList = []
 	#socket.setdefaulttimeout(30)
-	@retry(urllib2.URLError, tries=4, delay=1, backoff=2)
+	@retry(urllib2.URLError)
 	def urlOpenRetry():
 		return pq(userProfileLink+"/games?tab=all&xml=1", parser="xml", timeout=30)
 	#print page('gamesList')('steamID').text()
@@ -105,7 +105,7 @@ def getFullGameList(userProfileLink):
 def getFriendsAndProfileLinks(userProfileLink):
 	friendDic = {}
 	#socket.setdefaulttimeout(30)
-	@retry(urllib2.URLError, tries=4, delay=1, backoff=2)
+	@retry(urllib2.URLError)
 	def urlOpenRetry():
 		return pq(userProfileLink +"/friends?xml=1", parser="xml", timeout=30)
 	friends = urlOpenRetry()('friendsList')('friends')('friend')
