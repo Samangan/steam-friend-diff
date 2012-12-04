@@ -46,7 +46,7 @@
 			</div>
 			<div class="friend-unique-games"  style="float: right">			
 					<table width="300" class="table table-condensed table-hover">
-						<tr><th class="error">Games in Common</th></tr>
+						<tr><th class="error">{{friend}}'s unique games</th></tr>
 						<tbody>
 							{%for game in friend_game_list%}
 								{% if game not in user_game_list%}
@@ -59,7 +59,7 @@
 			<div class="common-games"  style="display: inline">			
 					<table class="table table-condensed table-hover"  style="margin-left: auto;
 margin-right: auto; width:300">
-						<tr><th class="info">{{friend}}'s unique games</th></tr>
+						<tr><th class="info">Games in Common</th></tr>
 						<tbody>
 							{%for game in user_game_list%}
 								{% if game in friend_game_list%}
