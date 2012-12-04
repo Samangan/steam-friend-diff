@@ -8,12 +8,13 @@ h1{
 	font-size: 60px;
 }
 
+
 h1 small{
 	display:block;
 	margin-top: 15px;
 }
 body{
-	max-width: 800px;
+	max-width: 900px;
 	margin-right: auto;
 	margin-left: auto;
 	display:block;	
@@ -22,7 +23,7 @@ body{
 #content{
 	margin-right: auto;
 	margin-left: auto;
-	max-width: 800px;
+	max-width: 900px;
 }
 
 h2{
