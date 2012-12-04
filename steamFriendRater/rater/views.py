@@ -16,9 +16,13 @@ import time
 #		0check out python coding standards
 
 #TODO: 
-#	-Hipster Calculator
-#	-Casual Calculator
-
+#	-See Xin convo:
+#		-Display only your friend's list??
+#		-Display them both side by-side..--> yes I think
+#		-Filter by game genre (mutliplayer, mmo, casual, indie, etc)
+#			-THINK: how to get that information:
+#			-Keep a database of lists of game genres and games
+#			-update changes to that DB every night (by scraping the store pages for each genre)
 def retry(ExceptionToCheck, tries=10, delay=3, backoff=2, logger=None):
     """Retry calling the decorated function using an exponential backoff.
 
