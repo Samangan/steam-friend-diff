@@ -200,6 +200,11 @@ def compare(request):
 			'error_message': "Rating Failed! You didn't enter a valid url to your Friend's Steam Profile Page",
 		}, context_instance=RequestContext(request))
 
+	intersectionCount = 0
+	for game in userGames:
+		if game in friendGames:
+			intersectionCount += 1
+
 	userName = getUserName(userName)
 	friend = getUserName(friend)
 
@@ -208,4 +213,5 @@ def compare(request):
 		'friend': friend,
 		'user_game_list': userGames,
 		'friend_game_list': friendGames,
+		'intersection_count': intersectionCount,
 	}, context_instance=RequestContext(request))

@@ -11,8 +11,36 @@
 		<link href="http://safe-woodland-4385.herokuapp.com/media/style/style.css" rel="stylesheet" type="text/css">
     
           <script src="http://safe-woodland-4385.herokuapp.com/media/js/canvasXpress.min.js"></script>
+
+          <script>
+
+			      var showDemo = function () {
+			        new CanvasXpress("canvas1", {
+			          "venn": {
+			            "data": {
+			              "A": {{user_game_list|length}},
+			              "B": {{friend_game_list|length}},
+			              "AB": {{intersection_count}}
+			            },
+			            "legend": {
+			              "A": "{{username}}'s Games",
+			              "B": "{{friend}}'s Games"
+			            }
+			          }
+			        }, {
+			          "graphType": "Venn",
+			          "useFlashIE": true,
+			          "background": "rgb(245,245,245)",
+			          "vennGroups": 2,
+			           "vennColors": [
+			           "rgb(0,133,0)",
+			           "rgb(163,0,0)"
+			           ],
+			        })
+			    }
+			</script>
     </head>
-    <body>
+    <body onload="showDemo();">
 	    <header>		
 			<div class="page-header">		
 				<h1>Rank My Steam Friends<small>See how much in common your friends have with you</small></h1>
@@ -23,11 +51,11 @@
 				{{ error_message }}</strong></p>
 			</div>
 			{% endif %}   
-
-
+			 
 			<h2>Venn Diagram</h2>
 			
 			<div id="table-container" style="margin:0 auto;">
+				<!-- <canvas id="canvas1" width="400" height="500" style="display:table; margin: 0px auto;"></canvas> -->
 			<div class="user-unique-games"  style="float: left; width:300">			
 					<table class="table table-condensed table-hover" width="300;">
 						<tr><th class="success">{{username}}'s unique games</th></tr>
