@@ -8,8 +8,9 @@
     
     
   
-		<link href="http://safe-woodland-4385.herokuapp.com/media/style/style.css" rel="stylesheet" type="text/css">
- 
+		<link href="http://safe-woodland-4385.herokuapp.com/media/style/style.css" rel="stylesheet" type="text/css">  
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+ 		 <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js"></script>
     </head>
     <body>
 	    <header>		
@@ -17,6 +18,7 @@
 				<h1>Steam Friend Compare<small>See how much in common your friends have with you</small></h1>
 			</div>
 		</header>
+		
 	     <div id="content">
 			{% if error_message %}<div class="alert alert-error">
 				{{ error_message }}</strong></p>
@@ -24,16 +26,76 @@
 			{% endif %}   
 			 
 			<h2 style="text-align:center;">Game Library Comparison</h2>
+			<div id="vennD"></div>
+			<script type="text/javascript"> 		 
+			var w = 720,
+			    h = 375;
+			 
+			var svg = d3.select("#vennD").append("svg:svg")
+			    .attr("width", w)
+			    .attr("height", h);
+			 
+			svg.append("svg:circle")
+			    .attr("cx", 263)
+			    .attr("cy", 150)
+			    .attr("r", 150)
+			    .style("fill", "steelblue")
+			    .style("fill-opacity", ".5");
+			 
+			svg.append("svg:circle")
+			    .attr("cx", 413)
+			    .attr("cy", 150)
+			    .attr("r", 150)
+			    .style("fill", "red")
+			    .style("fill-opacity", ".5");
+			 
+			svg.append("svg:text")
+				.attr("x", 338)
+				.attr("y", 150)
+				.style("fill", "black")
+				.text("{{intersection_count}}");
+			
+			svg.append("svg:text")
+				.attr("x", 135)
+				.attr("y", 80)
+				.style("fill", "black")
+				.text("{{username}}");
+
+			svg.append("svg:text")
+				.attr("x", 188)
+				.attr("y", 150)
+				.style("fill", "black")
+				.text("{{user_count}}");
+
+			svg.append("svg:text")
+				.attr("x", 440)
+				.attr("y", 80)
+				.style("fill", "black")
+				.text("{{friend}}");
+
+			svg.append("svg:text")
+				.attr("x", 480)
+				.attr("y", 150)
+				.style("fill", "black")
+				.text("{{friend_count}}");
+
+		 	
+    </script> 
+    <script>
+    	$("svg").css("display", "block");
+    	$("svg").css("margin-left", "auto");
+    	$("svg").css("margin-right", "auto");
+    </script>
 			<div id="table-container" style="margin:0 auto;">
 			<div class="user-unique-games"  style="float: left; width:300px;">			
 					<table class="table table-condensed table-hover table-bordered" width="300">
 						<thead>
-						<tr><th class="success" style="text-align:center;">{{username}}'s unique games</th></tr>
+						<tr><th class="info" style="text-align:center;">{{username}}'s unique games</th></tr>
 						</thead>
 						<tbody>
 							{%for game in user_game_list%}
 								{% if game not in friend_game_list%}
-									<tr class="success"><td style="text-align:center;">{{game}}</td></tr>
+									<tr class="info"><td style="text-align:center;">{{game}}</td></tr>
 								{% endif%}
 							{%endfor%}
 						</tbody>
@@ -56,12 +118,12 @@
 			<div class="common-games"  style="display: inline">			
 					<table class="table table-condensed table-hover table-bordered"  style="margin-left:auto; margin-right: auto; width:300px;">
 						<thead>
-						<tr><th class="info" style="text-align:center;">Games in Common</th></tr>
+						<tr><th class="success" style="text-align:center;">Games in Common</th></tr>
 						</thead>
 						<tbody>
 							{%for game in user_game_list%}
 								{% if game in friend_game_list%}
-									<tr class="info"><td style="text-align:center;">{{game}}</td></tr>
+									<tr class="success"><td style="text-align:center;">{{game}}</td></tr>
 								{% endif%}
 							{%endfor%}
 						</tbody>
