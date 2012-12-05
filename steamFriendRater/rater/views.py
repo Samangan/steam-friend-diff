@@ -207,6 +207,8 @@ def compare(request):
 
 	userName = getUserName(userName)
 	friend = getUserName(friend)
+	userCount = len(userGames) - intersectionCount
+	friendCount = len(friendGames) - intersectionCount
 
 	return render_to_response('rater/compare.html', {
 		'username': userName,
@@ -214,4 +216,6 @@ def compare(request):
 		'user_game_list': userGames,
 		'friend_game_list': friendGames,
 		'intersection_count': intersectionCount,
+		'user_count':userCount,
+		'friend_count':friendCount,
 	}, context_instance=RequestContext(request))
