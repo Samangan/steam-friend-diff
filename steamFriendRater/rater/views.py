@@ -70,7 +70,7 @@ def getUserName(userProfileLink):
 	#socket.setdefaulttimeout(30)
 	@retry(urllib2.URLError)
 	def urlOpenRetry():
-		return pq(userProfileLink+"/games?tab=all&xml=1", parser="xml", timeout=30)	
+		return pq(userProfileLink+"/games?tab=all&xml=1", parser="xml")	
 	return urlOpenRetry()('gamesList')('steamID').text()
 
 def getGameList(userProfileLink):
@@ -78,7 +78,7 @@ def getGameList(userProfileLink):
 	#socket.setdefaulttimeout(30)
 	@retry(urllib2.URLError)
 	def urlOpenRetry():
-		return pq(userProfileLink+"/games?tab=all&xml=1", parser="xml", timeout=30)
+		return pq(userProfileLink+"/games?tab=all&xml=1", parser="xml")
 	games = urlOpenRetry()('gamesList')('games')('game')
 	hasPlayedLastTwoWeeks = True
 	i = 0
@@ -96,7 +96,7 @@ def getFullGameList(userProfileLink):
 	#socket.setdefaulttimeout(30)
 	@retry(urllib2.URLError)
 	def urlOpenRetry():
-		return pq(userProfileLink+"/games?tab=all&xml=1", parser="xml", timeout=30)
+		return pq(userProfileLink+"/games?tab=all&xml=1", parser="xml")
 	#print page('gamesList')('steamID').text()
 	games = urlOpenRetry()('gamesList')('games')('game')
 
@@ -104,14 +104,14 @@ def getFullGameList(userProfileLink):
 	for i in range(len(games)):
 		gamesList.append(games.eq(i)('name').text())
 
-	return gamesList
+	return urlOpenRetry()('gamesList')('steamID').text(), gamesList
 
 def getFriendsAndProfileLinks(userProfileLink):
 	friendDic = {}
 	#socket.setdefaulttimeout(30)
 	@retry(urllib2.URLError)
 	def urlOpenRetry():
-		return pq(userProfileLink +"/friends?xml=1", parser="xml", timeout=30)
+		return pq(userProfileLink +"/friends?xml=1", parser="xml")
 	friends = urlOpenRetry()('friendsList')('friends')('friend')
 
 	i = 0
@@ -186,14 +186,14 @@ def compare(request):
 			'error_message': "Rating Failed! You didn't enter a valid url for your Friend's Steam Profile Page",
 		}, context_instance=RequestContext(request))
 
-	userGames = getFullGameList(userName)
+	userName, userGames = getFullGameList(userName)
 
 	if not userGames:
 		return render_to_response('rater/index.html', {
 			'error_message': "Rating Failed! You didn't enter a valid url to your Steam Profile Page",
 		}, context_instance=RequestContext(request))
 
-	friendGames = getFullGameList(friend)
+	friend, friendGames = getFullGameList(friend)
 
 	if not friendGames:
 		return render_to_response('rater/index.html', {
@@ -205,8 +205,8 @@ def compare(request):
 		if game in friendGames:
 			intersectionCount += 1
 
-	userName = getUserName(userName)
-	friend = getUserName(friend)
+	#userName = getUserName(userName)
+	#friend = getUserName(friend)
 	userCount = len(userGames) - intersectionCount
 	friendCount = len(friendGames) - intersectionCount
 
