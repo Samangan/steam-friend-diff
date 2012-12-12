@@ -29,7 +29,7 @@
 			<div id="vennD"></div>
 			<script type="text/javascript"> 		 
 			var w = 720,
-			    h = 375;
+			    h = 320;
 			 
 			var svg = d3.select("#vennD").append("svg:svg")
 			    .attr("width", w)
@@ -133,46 +133,5 @@
 			
 		</div>
 		</div>
-<!-- 
-
-		<h2>{{username}}'s Games</h2>
-			<h3>Key</h3>
-			<div id="key"><ul><li>Blue: Games in common</li><li>Red: Games {{friend}} doesn't have</li></ul></div>
-		{% if user_game_list %}
-		<div class="rankList">			
-				<table class="table table-condensed table-hover">
-					<tbody>
-						{%for game in user_game_list%}
-							{% if game in friend_game_list%}
-								<tr class="info"><td>{{game}}</td></tr>
-							{% else %}
-								<tr class="error"><td>{{game}}</td></tr>
-							{% endif%}
-						{%endfor%}
-					</tbody>
-				</table>
-		</div>
-		{% endif %}   
-	
-
-		<h2>{{friend}}'s Games</h2>
-		<h3>Key</h3>
-		<div id="key"><ul><li>Blue: Games in common</li><li>Red: Games {{username}} doesn't have</li></ul></div>
-		{% if friend_game_list %}
-		<div class="friend-list">			
-				<table class="table table-condensed table-hover">
-					<tbody>
-							{%for r in friend_game_list%}
-								{% if r in user_game_list%}
-									<tr class="info"><td>{{r}}</td></tr>
-								{% else %}
-									<tr class="error"><td>{{r}}</td></tr>
-								{% endif%}
-							{% endfor %}
-					</tbody>
-				</table>
-		</div>
-		{% endif %}   
-		</div> -->
     </body>
 </html>

@@ -204,9 +204,7 @@ def compare(request):
 	for game in userGames:
 		if game in friendGames:
 			intersectionCount += 1
-
-	#userName = getUserName(userName)
-	#friend = getUserName(friend)
+	
 	userCount = len(userGames) - intersectionCount
 	friendCount = len(friendGames) - intersectionCount
 
