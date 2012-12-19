@@ -14,7 +14,7 @@ h1 small{
 	margin-top: 15px;
 }
 body{
-	max-width: 1000px;
+	/*max-width: 1000px;*/
 	margin-right: auto;
 	margin-left: auto;
 	display:block;	
@@ -23,8 +23,33 @@ body{
 #content{
 	margin-right: auto;
 	margin-left: auto;
-	max-width: 920px;
+	/*max-width: 920px;*/
 }
+
+.hero-unit{
+	margin-bottom:0px;
+	background-color:#E1F7F7;
+	box-shadow: 10px 10px 5px #888;
+}
+
+.hero-unit p{
+	text-align: center;
+}
+
+.thumbnails {
+    text-align:center;
+}
+
+.thumbnails > li {
+    display: inline-block;
+    *display:inline; /* ie7 fix */
+    float: none; /* this is the part that makes it work */
+}
+
+form {
+	text-align: center;
+}
+
 
 h2{
 	padding: 5px;
