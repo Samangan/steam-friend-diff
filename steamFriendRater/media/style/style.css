@@ -13,12 +13,25 @@ h1 small{
 	display:block;
 	margin-top: 15px;
 }
+
+*::selection{
+	background:#ffffff;
+}
+
 body{
 	/*max-width: 1000px;*/
 	margin-right: auto;
 	margin-left: auto;
 	display:block;	
 }
+
+}
+#footer { clear: both; position: relative; z-index: 10; height: 3em; margin-top: -3em; }
+#footer { background-color: #B5966A;
+color: white;
+font-size: 100%;
+text-align: center;
+line-height: 30px;}
 
 #content{
 	margin-right: auto;
