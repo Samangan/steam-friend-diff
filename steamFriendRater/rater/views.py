@@ -23,7 +23,7 @@ import time
 #			-THINK: how to get that information:
 #			-Keep a database of lists of game genres and games
 #			-update changes to that DB every night (by scraping the store pages for each genre)
-def retry(ExceptionToCheck, tries=10, delay=3, backoff=2, logger=None):
+def retry(ExceptionToCheck, tries=10, delay=1, backoff=1, logger=None):
     """Retry calling the decorated function using an exponential backoff.
 
     http://www.saltycrane.com/blog/2009/11/trying-out-retry-decorator-python/
@@ -93,18 +93,19 @@ def getGameList(userProfileLink):
 
 def getFullGameList(userProfileLink):
 	gamesList = []
-	#socket.setdefaulttimeout(30)
 	@retry(urllib2.URLError)
 	def urlOpenRetry():
 		return pq(userProfileLink+"/games?tab=all&xml=1", parser="xml")
-	#print page('gamesList')('steamID').text()
-	games = urlOpenRetry()('gamesList')('games')('game')
+	page = urlOpenRetry()
+	games = page('gamesList')('games')('game')
+
+	print "got the games for: " + userProfileLink
 
 	i = 0
 	for i in range(len(games)):
 		gamesList.append(games.eq(i)('name').text())
 
-	return urlOpenRetry()('gamesList')('steamID').text(), gamesList
+	return page('gamesList')('steamID').text(), gamesList
 
 def getFriendsAndProfileLinks(userProfileLink):
 	friendDic = {}
@@ -192,6 +193,9 @@ def compare(request):
 		return render_to_response('rater/index.html', {
 			'error_message': "Rating Failed! You didn't enter a valid url to your Steam Profile Page",
 		}, context_instance=RequestContext(request))
+
+	## Add a delay before getting next page (to avoid the HTTP 503 errors)
+	#time.sleep(1)
 
 	friend, friendGames = getFullGameList(friend)
 
