@@ -56,8 +56,8 @@ def compare(request):
 			'error_message': "Rating Failed! You didn't enter a valid url to your Steam Profile Page",
 		}, context_instance=RequestContext(request))
 
-	## Add a delay before getting next page (to avoid the HTTP 503 errors)
-	#time.sleep(1)
+	## Add a delay before getting next page
+	time.sleep(1)
 
 	friend, friendGames = getFullGameList(friend)
 
